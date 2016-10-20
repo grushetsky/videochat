@@ -2,8 +2,8 @@ var params = getHashParams(),
     mode = typeof(params.mode)=='undefined'?'webrtc':params.mode,
     username,
     password,
-    application_name = typeof(params.appname)=='undefined'?'videochat':params.appname,
-    account_name = params.accname,
+    application_name = "p2p-test",
+    account_name = "restream",
     dialog,
     showLog = true,
     currentCall = null,
@@ -38,13 +38,13 @@ voxAPI.addEventListener(VoxImplant.Events.AuthResult, onAuthResult);
 voxAPI.addEventListener(VoxImplant.Events.IncomingCall, onIncomingCall);
 voxAPI.addEventListener(VoxImplant.Events.MicAccessResult, onMicAccessResult);
 voxAPI.addEventListener(VoxImplant.Events.SourcesInfoUpdated, onSourcesInfoUpdated);
- 
+
 // initialize SDK
 try {
-  voxAPI.init({ 
+  voxAPI.init({
     useFlashOnly: mode=='flash'?true:false, // force Flash mode
     micRequired: true, // force microphone/camera access request
-    videoSupport: true, // enable video support 
+    videoSupport: true, // enable video support
     progressTone: true, // play progress tone
     swfContainer: 'voximplant_container' // Flash movie will be loaded in the specified container
   });
@@ -53,9 +53,9 @@ try {
 }
 
 // SDK ready - functions can be called now
-function onSdkReady(){        
+function onSdkReady(){
   log("onSDKReady version "+VoxImplant.version);
-  log("WebRTC supported: "+voxAPI.isRTCsupported()); 
+  log("WebRTC supported: "+voxAPI.isRTCsupported());
   connect();
 }
 
@@ -93,7 +93,7 @@ function onConnectionEstablished() {
             }
         }],
       closable: false,
-      onshown: function(dialog) {            
+      onshown: function(dialog) {
         $('#inputUsername').focus();
         $('#authForm form').on('submit', function(e) {
           username = $('#inputUsername').val();
@@ -103,7 +103,7 @@ function onConnectionEstablished() {
         });
       }
     });
-    dialog.open();                 
+    dialog.open();
   } else login();
 }
 
@@ -128,22 +128,22 @@ function onConnectionClosed() {
 // Handle authorization result
 function onAuthResult(e) {
   log("AuthResult: "+e.result);
-  if (e.result) { 
-    // Authorized successfully         
+  if (e.result) {
+    // Authorized successfully
     dialog.close();
     var title = $('.panel-title').html() + ': logged in as ' + username;
     $('.panel-title').html(title);
     $('#controls').slideDown();
     showLocalVideo(true);
     if (mode == 'flash') {
-      // Camera settings            
+      // Camera settings
       voxAPI.setLocalVideoSize(320, 240);
       voxAPI.setVideoSettings({"profile": "baseline", "level":"2.1", "width": "320", "height": "240", "fps": "25", "bandwidth": "65536", "quality": "75", "keyframeInterval": "40" });
     } else {
       // Move local video from camera to container
       $('#voximplantlocalvideo').appendTo('#voximplant_container');
       $('#voximplantlocalvideo')[0].play();
-    }          
+    }
   } else {
     // Wrong username or password
     if (!$('div.alert.alert-danger').length) $('#authForm').prepend('<div class="alert alert-danger" role="alert">Wrong username or password was specified</div>');
@@ -152,7 +152,7 @@ function onAuthResult(e) {
 }
 
 // Call connected
-function onCallConnected(e) {          
+function onCallConnected(e) {
   log("CallConnected: "+currentCall.id());
   if ($('#cancelButton').length) {
     $('#cancelButton').html('Disconnect');
@@ -160,7 +160,7 @@ function onCallConnected(e) {
     $('#callButton').replaceWith('<button type="button" class="btn btn-danger" id="cancelButton">Disconnect</button>');
     $('#cancelButton').click(function() {
       currentCall.hangup();
-    }); 
+    });
   }
   if (mode == 'flash') {
     setTimeout(function() {
@@ -211,9 +211,9 @@ function onSourcesInfoUpdated() {
 // Camera/mic access result
 function onMicAccessResult(e) {
   log("Mic/Cam access allowed: "+e.result);
-  if (e.result) {       
-    // Access was allowed   
-    if (mode == 'webrtc') dialog.close();  
+  if (e.result) {
+    // Access was allowed
+    if (mode == 'webrtc') dialog.close();
   } else {
     // Access was denied
     $('div.bootstrap-dialog').addClass('type-danger');
@@ -235,12 +235,12 @@ function onIncomingCall(e) {
 
 // Progress tone play start
 function onProgressToneStart(e) {
-  log("ProgessToneStart for call id: "+currentCall.id()); 
+  log("ProgessToneStart for call id: "+currentCall.id());
 }
 
 // Progres tone play stop
 function onProgressToneStop(e) {
-  log("ProgessToneStop for call id: "+currentCall.id());  
+  log("ProgessToneStop for call id: "+currentCall.id());
 }
 
 // Create outbound call
@@ -259,13 +259,13 @@ function createCall() {
 
 // Disconnect current call
 function disconnectCall() {
-  if (currentCall != null) {        
+  if (currentCall != null) {
     log("Disconnect");
     currentCall.hangup();
   }
-} 
+}
 
-// Close connection with VoxImplant      
+// Close connection with VoxImplant
 function closeConnection() {
   voxAPI.disconnect();
 }
@@ -278,9 +278,9 @@ function connect() {
     dialog = new BootstrapDialog({
       title: 'Camera/Microphone access',
       message: 'Please click Allow to allow access to your camera and microphone',
-      closable: false      
+      closable: false
     });
-    dialog.open();  
+    dialog.open();
   }
 }
 
@@ -315,6 +315,6 @@ function fullScreenmode(flag) {
       }
     }
   } else {
-    // enable FullScreen in Flash  mode 
+    // enable FullScreen in Flash  mode
   }
 }
